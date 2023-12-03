@@ -20,7 +20,7 @@ if page == "Edit Data":
         with conn.session as session:
             query = text('INSERT INTO produk (product_name, category, brand, price, discounted, ratings_1_to_5, supplier_name) \
                           VALUES (:1, :2, :3, :4, :5, :6, :7);')
-            session.execute(query, {'1':'', '2':'', '3':'', '4':'', '5':'', '6':'', '7':'', '8':''})
+            session.execute(query, {'1':'', '2':'', '3':'', '4':'', '5':'', '6':'', '7':''})
             session.commit()
 
     data = conn.query('SELECT id, product_name, category, brand, price, discounted, ratings_1_to_5, supplier_name FROM produk ORDER By id;', ttl="0")
