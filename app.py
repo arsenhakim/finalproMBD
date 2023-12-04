@@ -1,9 +1,9 @@
 import streamlit as st
 from sqlalchemy import text
 
-list_category = ['', 'Health', 'Sport and outdors', 'Furniture', 'Clothing and Apparel', 'Beauty and Personal Care', 'Books and Literature', 'Electronic', 'Automotive', 'Home and Kitchen Appliance', 'Toys']
+list_category = ['', 'Health', 'Sport and outdors', 'Furniture', 'Clothing and Apparel', 'Beauty and personal care', 'Books and Literature', 'Electronic', 'Automotive', 'Home and Kitchen Appliance', 'Toys']
 list_discounted = ['', 'Yes', 'No']
-list_ratings_1_to_5 = ['', '1', '2', '3', '4', '5']
+list_ratings = ['', 1, 2, 3, 4, 5]
 
 conn = st.connection("postgresql", type="sql", 
                      url="postgresql://arsenhakim:RC7muUaFB6YJ@ep-sparkling-lake-52449485.us-east-2.aws.neon.tech/web")
@@ -20,7 +20,7 @@ if page == "Edit Data":
         with conn.session as session:
             query = text('INSERT INTO produk (product_name, category, brand, price, discounted, ratings_1_to_5, supplier_name) \
                           VALUES (:1, :2, :3, :4, :5, :6, :7);')
-            session.execute(query, {'1':'', '2':'', '3':'', '4':'', '5':'', '6':'', '7':''})
+            session.execute(query, {'1': None, '2':None, '3':None, '4':None, '5':None, '6':None, '7':None, '8':None})
             session.commit()
 
     data = conn.query('SELECT id, product_name, category, brand, price, discounted, ratings_1_to_5, supplier_name FROM produk ORDER By id;', ttl="0")
@@ -34,14 +34,15 @@ if page == "Edit Data":
         ratings_1_to_5_lama = result["ratings_1_to_5"]
         supplier_name_lama = result["supplier_name"]
 
+
         with st.expander(f'a.n. {product_name_lama}'):
             with st.form(f'data-{id}'):
                 product_name_baru = st.text_input("product_name",product_name_lama )
-                category_baru = st.selectbox("category", list_category, list_category.index(product_name_lama))
+                category_baru = st.selectbox("category", list_category, index=[c.lower() for c in list_category].index(category_lama.lower()) if category_lama.lower() in [c.lower() for c in list_category] else 0)
                 brand_baru = st.text_input("brand", brand_lama)
                 price_baru = st.text_input("price", price_lama)
                 discounted_baru = st.selectbox("discounted", list_discounted, list_discounted.index(discounted_lama))
-                ratings_1_to_5_baru = st.selectbox("ratings_1_to_5", list_ratings_1_to_5, list_ratings_1_to_5.index(ratings_1_to_5_lama))
+                ratings_1_to_5_baru = st.selectbox("ratings_1_to_5", list_ratings, list_ratings.index(ratings_1_to_5_lama))
                 supplier_name_baru = st.text_input("supplier_name", supplier_name_lama)
                 
                 col1, col2 = st.columns([1, 6])
@@ -51,7 +52,7 @@ if page == "Edit Data":
                         with conn.session as session:
                             query = text('UPDATE produk \
                                           SET product_name=:1, category=:2, brand=:3, price=:4, \
-                                          discounted=:5, ratings_1_to_5=:6, supplier_name=:7, \
+                                          discounted=:5, ratings_1_to_5=:6, supplier_name=:7 \
                                           WHERE id=:8;')
                             session.execute(query, {'1':product_name_baru, '2':category_baru, '3':brand_baru, '4':price_baru, 
                                                     '5':discounted_baru, '6':ratings_1_to_5_baru, '7':supplier_name_baru, '8':id})
